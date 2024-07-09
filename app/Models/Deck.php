@@ -20,4 +20,10 @@ class Deck extends Model
      * @var string
      */
     protected $primaryKey = 'id_deck';
+
+    public function deck()
+    {
+        //$deck = Deck::find($this->id_deck);
+        return $this->belongsTo('\App\Models\Deck');
+    }
 }

@@ -16,10 +16,7 @@ class CardController extends Controller
      */
     public function index(): View
     {
-        $decks = DB::table('deck')->get();
-        $deck = DB::table('deck')->where('deck_format', 'standard')->first();
-        $formato = $deck->deck_name;
-        return view('test', ['deck' => $formato]);
+        
     }
 
     /**
