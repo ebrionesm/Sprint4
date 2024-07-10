@@ -6,15 +6,20 @@ use App\Models\Deck;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDeckRequest;
 use App\Http\Requests\UpdateDeckRequest;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class DeckController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() : View
     {
-        //
+        $decks = DB::table('deck')->get();
+        //$deck = DB::table('card')->where('card_expansion', 'PAL')->first();
+        //$formato = $deck->card_name;
+        return view('index', ['decks' => $decks]);
     }
 
     /**
