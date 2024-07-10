@@ -7,7 +7,9 @@
 <body>
     <div class="p-5">
         <div>
-            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Create Deck</button>
+        <a href="/create" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Create deck
+        </a>
         </div>
         <div class="flex flex-wrap -mx-4">
             @foreach ($decks as $deck)
@@ -22,4 +24,5 @@
         <!-- Very little is needed to make a happy life. - Marcus Aurelius -->
     </div>
 </body>
+</html>
 

@@ -9,3 +9,4 @@ use App\Http\Controllers\DeckController;
 });*/
 
 route::get('/', [DeckController::class, 'index']);
+route::get('/create', [DeckController::class, 'create']);
