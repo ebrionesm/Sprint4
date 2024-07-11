@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Deck;
+use App\Models\Card;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDeckRequest;
 use App\Http\Requests\UpdateDeckRequest;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+
 
 class DeckController extends Controller
 {
@@ -19,15 +22,38 @@ class DeckController extends Controller
         $decks = DB::table('deck')->get();
         //$deck = DB::table('card')->where('card_expansion', 'PAL')->first();
         //$formato = $deck->card_name;
-        return view('deckViews.main', ['decks' => $decks]);
+        return view('decks.main', ['decks' => $decks]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() : View
+    public function create(Request $request)
     {
-        return view('deckViews.create');
+        
+        $type = $request->input('type');
+
+        // Inicia la consulta usando Eloquent o Query Builder
+        $query = Card::query();
+
+        // Aplica el filtro por tipo de carta si se proporciona
+        if ($type) {
+            $query->where('card_type', $type);
+        }
+
+        // Ejecuta la consulta y obtén los resultados
+        $cards = $query->get();
+
+        // Devuelve la vista adecuada según si es AJAX o no
+        if ($request->ajax()) 
+        {
+            
+            return view('decks.partial', compact('cards'));
+        } 
+        else 
+        {
+            return view('decks.create', compact('cards'));
+        }
     }
 
     /**
@@ -44,12 +70,13 @@ class DeckController extends Controller
 
         // Crear una nueva instancia del modelo Deck y guardar los datos
         $deck = new Deck;
-        $deck->name = $request->name;
-        $deck->description = $request->description;
+        $deck->deck_name = $request->deck_name;
+        $deck->deck_format = $request->deck_format;
         $deck->card_amount = $request->card_amount;
         $deck->save();
 
-        return redirect()->route('deckViews.create')->with('success', 'Deck created successfully.');
+        $decks = DB::table('deck')->get();
+        return view('decks.main', ['decks' => $decks]);
     }
 
     /**
