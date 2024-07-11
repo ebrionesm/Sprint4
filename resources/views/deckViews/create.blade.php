@@ -1,8 +1,7 @@
 @extends('layout.index')
 @section('index')
 <div class="max-w-md mx-auto mt-8">
-    <form action="{{route('decks.store')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        @csrf
+    <form action="{{url('/store')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div class="mb-4">
             <label for="deck_name" class="block text-gray-700 text-sm font-bold mb-2">Deck Name</label>
             <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name"
