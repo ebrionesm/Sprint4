@@ -35,7 +35,6 @@ class DeckController extends Controller
      */
     public function store(StoreDeckRequest $request)
     {
-        \Log::info('Entering store method');
         $request->validate([
             'deck_name' => 'required|string|max:255',
             'deck_format' => 'required|string',
