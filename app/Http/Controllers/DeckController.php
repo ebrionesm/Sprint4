@@ -19,7 +19,7 @@ class DeckController extends Controller
         $decks = DB::table('deck')->get();
         //$deck = DB::table('card')->where('card_expansion', 'PAL')->first();
         //$formato = $deck->card_name;
-        return view('index', ['decks' => $decks]);
+        return view('deckViews.main', ['decks' => $decks]);
     }
 
     /**
@@ -27,8 +27,7 @@ class DeckController extends Controller
      */
     public function create() : View
     {
-        //
-        return view('create');
+        return view('deckViews.create');
     }
 
     /**
@@ -36,7 +35,21 @@ class DeckController extends Controller
      */
     public function store(StoreDeckRequest $request)
     {
-        //
+        \Log::info('Entering store method');
+        $request->validate([
+            'deck_name' => 'required|string|max:255',
+            'deck_format' => 'required|string',
+            'card_amount' => 'nullable|int'
+        ]);
+
+        // Crear una nueva instancia del modelo Deck y guardar los datos
+        $deck = new Deck;
+        $deck->name = $request->name;
+        $deck->description = $request->description;
+        $deck->card_amount = $request->card_amount;
+        $deck->save();
+
+        return redirect()->route('deckViews.create')->with('success', 'Deck created successfully.');
     }
 
     /**
