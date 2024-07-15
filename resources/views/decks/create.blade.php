@@ -1,8 +1,8 @@
 
 @extends('layout.index')
 <div class="flex justify-center">
-    <div class="w-1/4 max-w-md mx-auto mt-8" id="formulario">
-        <form action="{{url('/')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="w-2/5 max-w-md mx-auto mt-4" id="formulario">
+        <form action="{{route('decks.store')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             @csrf
             <div class="mb-4">
                 <label for="deck_name" class="block text-gray-700 text-sm font-bold mb-2">Deck Name</label>
@@ -32,32 +32,36 @@
                 </button>
             </div>
         </form>
-     
+        <li>
+
+        </li>
     </div>
         
-        <div class="flex flex-wrap w-3/4 overflow-y-auto max-h-screen">
-            @include('decks.partial') <!-- Incluye la vista parcial de cartas -->
-        </div>
-        
+    <div class="flex flex-wrap w-3/5 max-h-screen overflow-y-auto">
+        @include('decks.partial') <!-- Incluye la vista parcial de cartas -->
     </div>
-    
+        
 </div>
+    
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
         const filterButtons = document.querySelectorAll('.filter-btn');
+        const addButton = document.querySelectorAll('.add-btn');
+        const deleteButton = document.querySelectorAll('.delete-btn');
         const originalCards = document.getElementById('original-cards').innerHTML;
 
         filterButtons.forEach(btn => {
             btn.addEventListener('click', function () {
                 const type = this.getAttribute('data-type');
+                //const cardId = this.getAttribute('card-id');
                 filterCards(type);
             });
         });
 
         function filterCards(type) {
-            axios.get(`/create?type=${type}`)
+            axios.get(`/create?data=${type}`)
                 .then(response => {
                     const cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = response.data;
@@ -77,6 +81,25 @@
                     filterCards(type);
                 });
             });
+        }
+
+        addButton.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const cardId = this.getAttribute('card-id');
+                //const cardId = this.getAttribute('card-id');
+                addCards(cardId);
+            });
+        });
+
+        function addCards(cardId) {
+            axios.get(`/create?card=${cardId}`)
+                .then(response => {
+                    const cardContainer = document.getElementById('card-container');
+                    cardContainer.innerHTML = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching cards:', error);
+                });
         }
     });
 </script>

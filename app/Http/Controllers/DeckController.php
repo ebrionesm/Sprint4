@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeckController extends Controller
 {
+    private array $currentDeckCards;
     /**
      * Display a listing of the resource.
      */
@@ -30,10 +31,37 @@ class DeckController extends Controller
      */
     public function create(Request $request)
     {
-        
-        $type = $request->input('type');
+        $type = $request->input('data');
+        if ($request->ajax())
+        {
+            if($request->input('data') == 'add')
+            {
+                
+            }
+            else if($request->input('data') == 'delete')
+            {
 
-        // Inicia la consulta usando Eloquent o Query Builder
+            }
+        }
+        
+        if($request->input('type') != null)
+        {
+            
+        }
+
+        if($request->input('card') == NULL)
+        {
+            echo "HOLA";
+        }
+        else
+        {
+            echo "AAAAA";
+        }
+        if($request->input('data') !== NULL)
+        {
+            echo "adios";
+        }
+        echo $request->input('type');
         $query = Card::query();
 
         // Aplica el filtro por tipo de carta si se proporciona
@@ -43,11 +71,11 @@ class DeckController extends Controller
 
         // Ejecuta la consulta y obtén los resultados
         $cards = $query->get();
+        
 
         // Devuelve la vista adecuada según si es AJAX o no
         if ($request->ajax()) 
         {
-            
             return view('decks.partial', compact('cards'));
         } 
         else 
@@ -59,9 +87,8 @@ class DeckController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDeckRequest $request)
+    public function store(Request $request)
     {
-        \Log::info('Entering store method');
         $request->validate([
             'deck_name' => 'required|string|max:255',
             'deck_format' => 'required|string',
