@@ -43,16 +43,26 @@ class DeckController extends Controller
 
             }
         }*/
-        $type = $request->input('data');
-        $query = Card::query();
+        if($request->input('data'))
+        {
+            $type = $request->input('data');
+            $query = Card::query();
 
-        // Aplica el filtro por tipo de carta si se proporciona
-        if ($type) {
-            $query->where('card_type', $type);
+            // Aplica el filtro por tipo de carta si se proporciona
+            if ($type) {
+                $query->where('card_type', $type);
+            }
+
+            // Ejecuta la consulta y obtén los resultados
+            $cards = $query->get();
+            echo "MMMM";
         }
-
-        // Ejecuta la consulta y obtén los resultados
-        $cards = $query->get();
+        else
+        {
+            
+        }
+        
+        $cards = Card::all();
 
         $returnCards = $this->currentDeckCards;
 
@@ -61,12 +71,21 @@ class DeckController extends Controller
             echo "bbbb";
             if($request->input('currentCards'))
             {
-                echo "AAA";
-                $card = $request->input('currentCards');
-                $queryCard = Card::query();
-                $queryCard->where('id_card', $card);
+                $currentCard = $request->input('currentCards');
+                $cardQuery = Card::query();
 
-                $card = $queryCard->get();
+                // Aplica el filtro por tipo de carta si se proporciona
+                if ($currentCard) {
+                    $cardQuery->where('id_card', $currentCard);
+                }
+
+                array_push($returnCards, $cardQuery);
+
+                // Ejecuta la consulta y obtén los resultados
+                //$returnCards = $cardQuery->get();
+                /*echo "AAA";
+                
+                $card = Card::find($request->input('currentCards'));
                 if(count($this->currentDeckCards) > 0)
                 {
                     foreach($this->currentDeckCards as $currentCard)
@@ -88,11 +107,16 @@ class DeckController extends Controller
                 {
                     array_push($this->currentDeckCards, $card);
                     $returnCards = $this->currentDeckCards;
-                }
-                return view('decks.currentDeckList', compact('returnCards'));
+                }*/
+                echo "hola";
+                return view('decks.currentDeckList', compact('cards','returnCards'));
                 
             }
-            return view('decks.partial', compact('cards', 'returnCards'));
+            else
+            {
+                return view('decks.partial', compact('cards'));
+            }
+            
         }
         else
         {
