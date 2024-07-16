@@ -32,13 +32,24 @@
                 </button>
             </div>
         </form>
-        <li>
-
-        </li>
+        
+        
     </div>
         
     <div class="flex flex-wrap w-3/5 max-h-screen overflow-y-auto">
-        @include('decks.partial') <!-- Incluye la vista parcial de cartas -->
+        <div class="flex flex-col px-4 mt-4 " >
+            <div class="py-2">
+                <button class="filter-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2" data-type="">All cards</button>
+            </div>
+            <div class="py-2">
+                <button class="filter-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2" data-type="pokemon">Pokemon</button>
+                <button class="filter-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2" data-type="trainer">Trainer</button>
+                <button class="filter-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" data-type="energy">Energy</button>
+            </div>
+            @include('decks.currentDeckList')
+            @include('decks.partial')
+        </div>
+         <!-- Incluye la vista parcial de cartas -->
     </div>
         
 </div>
@@ -50,7 +61,8 @@
         const filterButtons = document.querySelectorAll('.filter-btn');
         const addButton = document.querySelectorAll('.add-btn');
         const deleteButton = document.querySelectorAll('.delete-btn');
-        const originalCards = document.getElementById('original-cards').innerHTML;
+
+        setUpAddButtons();
 
         filterButtons.forEach(btn => {
             btn.addEventListener('click', function () {
@@ -65,41 +77,57 @@
                 .then(response => {
                     const cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = response.data;
-                    setupFilterButtons(); // Vuelve a configurar los botones de filtro
+                    setUpAddButtons();
                 })
                 .catch(error => {
                     console.error('Error fetching cards:', error);
                 });
         }
 
-        function setupFilterButtons() {
+        /*function setUpFilterButtons() {
             const filterButtons = document.querySelectorAll('.filter-btn');
-
+            
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', function () {
                     const type = this.getAttribute('data-type');
                     filterCards(type);
                 });
             });
-        }
-
+        }*/
+        
         addButton.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const cardId = this.getAttribute('card-id');
-                //const cardId = this.getAttribute('card-id');
-                addCards(cardId);
+                btn.addEventListener('click', function () {
+                    const cardId = this.getAttribute('card-id');
+                    addCards(cardId);
+                });
             });
-        });
 
         function addCards(cardId) {
-            axios.get(`/create?card=${cardId}`)
+            console.log('Adding card with ID:', cardId);
+            axios.get(`/create?currentCards=${cardId}`)
                 .then(response => {
-                    const cardContainer = document.getElementById('card-container');
-                    cardContainer.innerHTML = response.data;
+                    const deckList = document.getElementById('deck-list');
+                    deckList.innerHTML = response.data;
+                    console.log('Deck list updated');
+                    setUpAddButtons();
                 })
                 .catch(error => {
                     console.error('Error fetching cards:', error);
                 });
+        }
+
+        function setUpAddButtons()
+        {
+            const addButton = document.querySelectorAll('.add-btn');
+            addButton.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const cardId = this.getAttribute('card-id');
+                    
+                    addCards(cardId);
+                });
+    
+                
+            });
         }
     });
 </script>

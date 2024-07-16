@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeckController extends Controller
 {
-    private array $currentDeckCards;
+    private array $currentDeckCards = [];
     /**
      * Display a listing of the resource.
      */
@@ -31,8 +31,8 @@ class DeckController extends Controller
      */
     public function create(Request $request)
     {
-        $type = $request->input('data');
-        if ($request->ajax())
+        
+        /*if ($request->ajax())
         {
             if($request->input('data') == 'add')
             {
@@ -42,26 +42,8 @@ class DeckController extends Controller
             {
 
             }
-        }
-        
-        if($request->input('type') != null)
-        {
-            
-        }
-
-        if($request->input('card') == NULL)
-        {
-            echo "HOLA";
-        }
-        else
-        {
-            echo "AAAAA";
-        }
-        if($request->input('data') !== NULL)
-        {
-            echo "adios";
-        }
-        echo $request->input('type');
+        }*/
+        $type = $request->input('data');
         $query = Card::query();
 
         // Aplica el filtro por tipo de carta si se proporciona
@@ -71,17 +53,64 @@ class DeckController extends Controller
 
         // Ejecuta la consulta y obtén los resultados
         $cards = $query->get();
+
+        $returnCards = $this->currentDeckCards;
+
+        if($request->ajax())
+        {
+            echo "bbbb";
+            if($request->input('currentCards'))
+            {
+                echo "AAA";
+                $card = $request->input('currentCards');
+                $queryCard = Card::query();
+                $queryCard->where('id_card', $card);
+
+                $card = $queryCard->get();
+                if(count($this->currentDeckCards) > 0)
+                {
+                    foreach($this->currentDeckCards as $currentCard)
+                    {
+                        if($currentCard->card->id_card == $card->id_card)
+                        {
+                            $currentCard->quantity++;
+                        }
+                        else
+                        {
+                            array_push($this->currentDeckCards, $card);
+                            $returnCards = $this->currentDeckCards;
+                        }
+                    
+                    }
+                    echo "hola";
+                }
+                else
+                {
+                    array_push($this->currentDeckCards, $card);
+                    $returnCards = $this->currentDeckCards;
+                }
+                return view('decks.currentDeckList', compact('returnCards'));
+                
+            }
+            return view('decks.partial', compact('cards', 'returnCards'));
+        }
+        else
+        {
+            return view('decks.create', compact('cards','returnCards'));
+        }
+        
+        
         
 
         // Devuelve la vista adecuada según si es AJAX o no
-        if ($request->ajax()) 
+        /*if ($request->ajax()) 
         {
-            return view('decks.partial', compact('cards'));
+            
         } 
         else 
         {
-            return view('decks.create', compact('cards'));
-        }
+            
+        }*/
     }
 
     /**
