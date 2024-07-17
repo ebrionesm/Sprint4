@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Deck;
 use App\Models\Card;
+use App\Models\DeckHasCard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDeckRequest;
 use App\Http\Requests\UpdateDeckRequest;
@@ -18,6 +19,12 @@ class DeckController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        // Recuperar las cartas del mazo actual de la sesión
+        $this->currentDeckCards = session('currentDeckCards', []);
+    }
     public function index() : View
     {
         $decks = DB::table('deck')->get();
@@ -31,18 +38,6 @@ class DeckController extends Controller
      */
     public function create(Request $request)
     {
-        
-        /*if ($request->ajax())
-        {
-            if($request->input('data') == 'add')
-            {
-                
-            }
-            else if($request->input('data') == 'delete')
-            {
-
-            }
-        }*/
         if($request->input('data'))
         {
             $type = $request->input('data');
@@ -55,62 +50,85 @@ class DeckController extends Controller
 
             // Ejecuta la consulta y obtén los resultados
             $cards = $query->get();
-            echo "MMMM";
         }
         else
         {
-            
+            $cards = Card::all();
         }
-        
-        $cards = Card::all();
 
         $returnCards = $this->currentDeckCards;
+        
 
         if($request->ajax())
         {
-            echo "bbbb";
+            //echo "bbbb";
             if($request->input('currentCards'))
             {
-                $currentCard = $request->input('currentCards');
-                $cardQuery = Card::query();
-
-                // Aplica el filtro por tipo de carta si se proporciona
-                if ($currentCard) {
-                    $cardQuery->where('id_card', $currentCard);
-                }
-
-                array_push($returnCards, $cardQuery);
-
-                // Ejecuta la consulta y obtén los resultados
-                //$returnCards = $cardQuery->get();
-                /*echo "AAA";
-                
-                $card = Card::find($request->input('currentCards'));
-                if(count($this->currentDeckCards) > 0)
+                if(!$this->checkDeckLimit())
                 {
-                    foreach($this->currentDeckCards as $currentCard)
-                    {
-                        if($currentCard->card->id_card == $card->id_card)
-                        {
-                            $currentCard->quantity++;
+                    if (isset($this->currentDeckCards[$request->input('currentCards')])) {
+                        // Si la carta ya está en el mazo, incrementar la cantidad
+                        if (isset($this->currentDeckCards[$request->input('currentCards')]['quantity'])) {
+                            $this->currentDeckCards[$request->input('currentCards')]['quantity']++;
                         }
-                        else
+                        
+                    } else {
+                        // Si la carta no está en el mazo, añadirla con cantidad inicial 1
+                        $cardQuery = Card::find($request->input('currentCards'));
+                        $cardsArray = $cardQuery->toArray();
+                        if ($cardQuery && $this->checkCardLimit($cardsArray)) 
                         {
-                            array_push($this->currentDeckCards, $card);
-                            $returnCards = $this->currentDeckCards;
+                            $this->currentDeckCards[$request->input('currentCards')] = [
+                                'quantity' => 1,
+                                'card' => $cardQuery,
+                            ];
                         }
-                    
                     }
-                    echo "hola";
+                    /*$currentCard = $request->input('currentCards');
+                    $cardQuery = Card::query();
+
+                    // Aplica el filtro por tipo de carta si se proporciona
+                    if ($currentCard) {
+                        $cardQuery->where('id_card', $currentCard);
+                    }
+
+                    // Obtén los resultados de la consulta y conviértelos a array
+                    $cardsArray = $cardQuery->get()->toArray();
+
+                    // Añadir los resultados al array de cartas del mazo actual
+                    if($this->checkCardLimit($cardsArray))
+                    {
+                        $this->currentDeckCards = array_merge($this->currentDeckCards, $cardsArray);
+                    }*/
+                    
+
+                    // Guardar las cartas del mazo actual en la sesión
+                    session(['currentDeckCards' => $this->currentDeckCards]);
                 }
-                else
-                {
-                    array_push($this->currentDeckCards, $card);
-                    $returnCards = $this->currentDeckCards;
-                }*/
-                echo "hola";
-                return view('decks.currentDeckList', compact('cards','returnCards'));
                 
+                return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
+                
+            }
+            else if($request->input('deleteCard'))
+            {
+                $cardPosition = -1;
+                foreach($this->currentDeckCards as $cardId => $cardData)
+                {
+                    if($cardData['id_card'] == $request->input('deleteCard'))
+                    {
+                        $cardPosition = $cardId;
+                    }
+                }
+
+                if ($cardPosition != -1) {
+                    array_splice($this->currentDeckCards, $cardPosition, 1);
+                }
+
+                $this->currentDeckCards = array_values($this->currentDeckCards);
+
+                session(['currentDeckCards' => $this->currentDeckCards]);
+
+                return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
             }
             else
             {
@@ -122,19 +140,52 @@ class DeckController extends Controller
         {
             return view('decks.create', compact('cards','returnCards'));
         }
-        
-        
-        
+    }
 
-        // Devuelve la vista adecuada según si es AJAX o no
-        /*if ($request->ajax()) 
+    public function checkCardLimit(array $cardsArray) : bool
+    {
+        $cardCount = 0;
+        foreach($this->currentDeckCards as $cardId => $cardData)
         {
+            if (isset($cardId['card']))
+            {
+                if($cardData['card']->id_card == $cardsArray[0]->id_card)
+                {
+                    
+                    if($cardData['card']->card_rarity != 'radiant')
+                    {
+                        if($cardId['quantity'] >= 4)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if($cardId['quantity'] >= 1)
+                        {
+                            return false;
+                        }
+                    }
+                    
+                }
+            }
             
-        } 
-        else 
+            
+        }
+
+        return true;
+    }
+
+    public function checkDeckLimit()
+    {
+        $totalCards = 0;
+        foreach($this->currentDeckCards as $cardId => $cardData)
         {
-            
-        }*/
+            if (isset($cardId['quantity'])) {
+                $totalCards += $cardId['quantity'];
+            }
+        }
+        return $totalCards > 60;
     }
 
     /**
@@ -152,8 +203,20 @@ class DeckController extends Controller
         $deck = new Deck;
         $deck->deck_name = $request->deck_name;
         $deck->deck_format = $request->deck_format;
-        $deck->card_amount = $request->card_amount;
+        $deck->card_amount = count($this->currentDeckCards);
         $deck->save();
+
+        
+        foreach($this->currentDeckCards as $currentCard)
+        {
+            $deckHasCard = new DeckHasCard;
+            $deckHasCard->id_deck = $deck->id_deck;
+            $deckHasCard->id_card = $currentCard['id_card'];
+            $deckHasCard->card_quantity = 0;
+            $deckHasCard->save();
+        }
+
+        session()->forget('currentDeckCards');
 
         $decks = DB::table('deck')->get();
         return view('decks.main', ['decks' => $decks]);

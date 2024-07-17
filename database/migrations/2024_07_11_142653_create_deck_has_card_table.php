@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedInteger('id_deck'); // Referencia a la clave primaria de la tabla decks
             $table->unsignedInteger('id_card'); // Referencia a la clave primaria de la tabla cards
             $table->integer('card_quantity'); // Campo para la cantidad de cartas, no puede ser nulo
+            $table->timestamps(); // created_at and updated_at
             
             // Definir la clave primaria compuesta
             $table->primary(['id_deck', 'id_card']);

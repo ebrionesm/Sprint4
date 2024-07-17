@@ -21,8 +21,8 @@
                 </div>
             </div>
             <div class="mb-4">
-                <p class="block text-gray-700 text-sm font-bold mb-2">Card amount</p>
-                <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">0</p>
+                <!--<p class="block text-gray-700 text-sm font-bold mb-2">Card amount</p>
+                <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">0</p>-->
                 <input type="hidden" id="card_amount" name="card_amount" value="0">
             </div>
             <div class="flex items-center justify-between">
@@ -62,7 +62,6 @@
         const addButton = document.querySelectorAll('.add-btn');
         const deleteButton = document.querySelectorAll('.delete-btn');
 
-        setUpAddButtons();
 
         filterButtons.forEach(btn => {
             btn.addEventListener('click', function () {
@@ -95,12 +94,21 @@
             });
         }*/
         
-        addButton.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const cardId = this.getAttribute('card-id');
-                    addCards(cardId);
-                });
+        setUpAddButtons();
+
+        function setUpAddButtons() {
+            const addButton = document.querySelectorAll('.add-btn');
+            addButton.forEach(btn => {
+                // Usa un atributo de datos para asegurar que solo se añade un event listener una vez
+                if (!btn.hasAttribute('data-listener-added')) {
+                    btn.addEventListener('click', function() {
+                        const cardId = this.getAttribute('card-id');
+                        addCards(cardId);
+                    });
+                    btn.setAttribute('data-listener-added', 'true');
+                }
             });
+        }
 
         function addCards(cardId) {
             console.log('Adding card with ID:', cardId);
@@ -116,18 +124,34 @@
                 });
         }
 
-        function setUpAddButtons()
-        {
-            const addButton = document.querySelectorAll('.add-btn');
+        setUpDeleteButtons();
+
+        function setUpDeleteButtons() {
+            const addButton = document.querySelectorAll('.delete-btn');
             addButton.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const cardId = this.getAttribute('card-id');
-                    
-                    addCards(cardId);
-                });
-    
-                
+                // Usa un atributo de datos para asegurar que solo se añade un event listener una vez
+                if (!btn.hasAttribute('data-listener-added')) {
+                    btn.addEventListener('click', function() {
+                        const cardId = this.getAttribute('card-id');
+                        deleteCards(cardId);
+                    });
+                    btn.setAttribute('data-listener-added', 'true');
+                }
             });
+        }
+
+        function deleteCards(cardId) {
+            console.log('Adding card with ID:', cardId);
+            axios.get(`/create?deleteCard=${cardId}`)
+                .then(response => {
+                    const deckList = document.getElementById('deck-list');
+                    deckList.innerHTML = response.data;
+                    console.log('Deck list updated');
+                    setUpDeleteButtons();
+                })
+                .catch(error => {
+                    console.error('Error fetching cards:', error);
+                });
         }
     });
 </script>
