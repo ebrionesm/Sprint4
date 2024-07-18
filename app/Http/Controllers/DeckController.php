@@ -28,6 +28,8 @@ class DeckController extends Controller
     public function index() : View
     {
         $decks = DB::table('deck')->get();
+        session()->forget('currentDeckCards');
+        $this->currentDeckCards = session('currentDeckCards', []);
         //$deck = DB::table('card')->where('card_expansion', 'PAL')->first();
         //$formato = $deck->card_name;
         return view('decks.main', ['decks' => $decks]);
@@ -66,43 +68,31 @@ class DeckController extends Controller
             {
                 if(!$this->checkDeckLimit())
                 {
-                    if (isset($this->currentDeckCards[$request->input('currentCards')])) {
+                    $cardAddPosition = $request->input('currentCards');
+                    if (isset($this->currentDeckCards[$cardAddPosition])) {
                         // Si la carta ya está en el mazo, incrementar la cantidad
-                        if (isset($this->currentDeckCards[$request->input('currentCards')]['quantity'])) {
-                            $this->currentDeckCards[$request->input('currentCards')]['quantity']++;
+                        if (isset($this->currentDeckCards[$cardAddPosition]['quantity'])) {
+                            $cardQuery = Card::find($cardAddPosition);
+                            $cardsArray = $cardQuery->toArray();
+                            if ($cardQuery && $this->checkCardLimit($cardsArray)) 
+                            {
+                                $this->currentDeckCards[$cardAddPosition]['quantity']++;
+                            }
                         }
                         
                     } else {
                         // Si la carta no está en el mazo, añadirla con cantidad inicial 1
-                        $cardQuery = Card::find($request->input('currentCards'));
+                        $cardQuery = Card::find($cardAddPosition);
                         $cardsArray = $cardQuery->toArray();
                         if ($cardQuery && $this->checkCardLimit($cardsArray)) 
                         {
-                            $this->currentDeckCards[$request->input('currentCards')] = [
+                            $this->currentDeckCards[$cardAddPosition] = [
                                 'quantity' => 1,
                                 'card' => $cardQuery,
                             ];
                         }
                     }
-                    /*$currentCard = $request->input('currentCards');
-                    $cardQuery = Card::query();
 
-                    // Aplica el filtro por tipo de carta si se proporciona
-                    if ($currentCard) {
-                        $cardQuery->where('id_card', $currentCard);
-                    }
-
-                    // Obtén los resultados de la consulta y conviértelos a array
-                    $cardsArray = $cardQuery->get()->toArray();
-
-                    // Añadir los resultados al array de cartas del mazo actual
-                    if($this->checkCardLimit($cardsArray))
-                    {
-                        $this->currentDeckCards = array_merge($this->currentDeckCards, $cardsArray);
-                    }*/
-                    
-
-                    // Guardar las cartas del mazo actual en la sesión
                     session(['currentDeckCards' => $this->currentDeckCards]);
                 }
                 
@@ -111,20 +101,17 @@ class DeckController extends Controller
             }
             else if($request->input('deleteCard'))
             {
-                $cardPosition = -1;
-                foreach($this->currentDeckCards as $cardId => $cardData)
+                $cardRemovePosition = $request->input('deleteCard');
+                if (isset($this->currentDeckCards[$cardRemovePosition])) 
                 {
-                    if($cardData['id_card'] == $request->input('deleteCard'))
-                    {
-                        $cardPosition = $cardId;
+                    // Si la cantidad es mayor que 1, disminuir la cantidad
+                    if ($this->currentDeckCards[$cardRemovePosition]['quantity'] > 1) {
+                        $this->currentDeckCards[$cardRemovePosition]['quantity']--;
+                    } else {
+                        // Si la cantidad es 1, eliminar la carta del mazo
+                        unset($this->currentDeckCards[$cardRemovePosition]);
                     }
                 }
-
-                if ($cardPosition != -1) {
-                    array_splice($this->currentDeckCards, $cardPosition, 1);
-                }
-
-                $this->currentDeckCards = array_values($this->currentDeckCards);
 
                 session(['currentDeckCards' => $this->currentDeckCards]);
 
@@ -145,29 +132,30 @@ class DeckController extends Controller
     public function checkCardLimit(array $cardsArray) : bool
     {
         $cardCount = 0;
+        echo 'hola5';
         foreach($this->currentDeckCards as $cardId => $cardData)
         {
-            if (isset($cardId['card']))
+            echo 'hola6';
+            if($cardData['card']->id_card == $cardsArray['id_card'])
             {
-                if($cardData['card']->id_card == $cardsArray[0]->id_card)
+                echo 'hola2';
+                if($cardData['card']->card_rarity != 'radiant')
                 {
-                    
-                    if($cardData['card']->card_rarity != 'radiant')
+                    echo 'hola3';
+                    if($cardData['quantity'] >= 4)
                     {
-                        if($cardId['quantity'] >= 4)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
-                    else
-                    {
-                        if($cardId['quantity'] >= 1)
-                        {
-                            return false;
-                        }
-                    }
-                    
                 }
+                else
+                {
+                    echo 'hola4';
+                    if($cardData['quantity'] >= 1)
+                    {
+                        return false;
+                    }
+                }
+                
             }
             
             
@@ -203,16 +191,21 @@ class DeckController extends Controller
         $deck = new Deck;
         $deck->deck_name = $request->deck_name;
         $deck->deck_format = $request->deck_format;
-        $deck->card_amount = count($this->currentDeckCards);
+        $cardQuantity = 0;
+        foreach($this->currentDeckCards as $cardId => $cardData)
+        {
+            $cardQuantity += $cardData['quantity'];
+        }
+        $deck->card_amount = $cardQuantity;
         $deck->save();
 
         
-        foreach($this->currentDeckCards as $currentCard)
+        foreach($this->currentDeckCards as $cardId => $cardData)
         {
             $deckHasCard = new DeckHasCard;
             $deckHasCard->id_deck = $deck->id_deck;
-            $deckHasCard->id_card = $currentCard['id_card'];
-            $deckHasCard->card_quantity = 0;
+            $deckHasCard->id_card = $cardData['card']->id_card;
+            $deckHasCard->card_quantity = $cardData['quantity'];
             $deckHasCard->save();
         }
 

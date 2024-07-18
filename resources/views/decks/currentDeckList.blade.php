@@ -3,7 +3,7 @@
         @if($returnCards && count($returnCards) > 0)
             @foreach ($returnCards as $cardId => $cardData)
                 @if(isset($cardData['card']))
-                    <li>{{ $cardData['card']->card_name }}</li>
+                    <li>{{ $cardData['card']->card_name }} {{$cardData['quantity']}}</li>
                 @else
                     <li>Card data not available for ID: {{ $cardId }}</li>
                 @endif
