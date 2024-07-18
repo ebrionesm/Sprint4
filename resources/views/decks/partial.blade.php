@@ -7,7 +7,7 @@
                     <p>{{ $card->card_name }}</p>
                     <p>{{ $card->card_type }}</p>
                     <p>0</p>
-                    <button class="add-btn inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" card-id="{{$card->id_card}}">{{$card->id_card}}+</button>
+                    <button class="add-btn inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" card-id="{{$card->id_card}}">+</button>
                     <button class="delete-btn inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" card-id="{{$card->id_card}}">-</button>
                 </div>
             </div>

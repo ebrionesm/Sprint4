@@ -5,13 +5,20 @@
         Create deck
     </a>
     </div>
-    <div class="flex flex-wrap -mx-4">
+    <div class="flex flex-wrap ">
         @foreach ($decks as $deck)
-        <button class="p-4 w-1/4 px-4 mb-4">
+        <a class="p-4 px-5 mb-4">
             <div class="max-w-xs rounded overflow-hidden shadow-lg bg-blue-500 text-white mb-4 p-4 h-64 w-48 relative">
                 <p>{{ $deck->deck_name}}</p>
                 <p>{{ $deck->card_amount}}/60</p>
+                <a class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="{{$deck->id_deck}}">Update</a>
+                <form action="{{ route('decks.delete', $deck->id_deck) }}" method="POST" class="inline-block">
+                    @csrf
+                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Delete
+                    </button>
+                </form>
             </div>
-        </button>
+        </a>
         @endforeach
 </div>
