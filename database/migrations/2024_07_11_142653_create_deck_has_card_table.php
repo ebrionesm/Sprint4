@@ -28,7 +28,7 @@ return new class extends Migration
         DB::table('deck_has_card')->insert([
             // Inserts para el deck "Lost Zone Box" (ID: 1)
             ['id_deck' => 1, 'id_card' => 1, 'card_quantity' => 4],
-            ['id_deck' => 1, 'id_card' => 2, 'card_quantity' => 1],
+            ['id_deck' => 1, 'id_card' => 2, 'card_quantity' => 2],
             ['id_deck' => 1, 'id_card' => 3, 'card_quantity' => 1],
             ['id_deck' => 1, 'id_card' => 4, 'card_quantity' => 1],
             ['id_deck' => 1, 'id_card' => 5, 'card_quantity' => 1],

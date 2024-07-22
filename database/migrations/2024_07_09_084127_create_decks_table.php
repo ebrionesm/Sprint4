@@ -23,7 +23,7 @@ return new class extends Migration
 
         DB::table('deck')->insert([
             ['deck_name' => 'Lost Zone Box', 'deck_format' => 'standard', 'card_amount' => 60, 'created_at' => now(), 'updated_at' => now()],
-            ['deck_name' => 'Gardevoir EX', 'deck_format' => 'standard', 'card_amount' => 60, 'created_at' => now(), 'updated_at' => now()],
+            ['deck_name' => 'Gardevoir EX', 'deck_format' => 'standard', 'card_amount' => 55, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

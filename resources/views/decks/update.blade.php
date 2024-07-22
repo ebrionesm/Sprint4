@@ -2,11 +2,11 @@
 @extends('layout.index')
 <div class="flex justify-center">
     <div class="w-2/5 max-w-md mx-auto mt-4" id="formulario">
-        <form action="{{route('decks.store')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form action="{{route('decks.updateDeck')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             @csrf
             <div class="mb-4">
                 <label for="deck_name" class="block text-gray-700 text-sm font-bold mb-2">Deck Name</label>
-                <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name"
+                <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name" value="{{$currentDeckName}}"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
             <div class="mb-6">
@@ -24,6 +24,11 @@
                 <!--<p class="block text-gray-700 text-sm font-bold mb-2">Card amount</p>
                 <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">0</p>-->
                 <input type="hidden" id="card_amount" name="card_amount" value="0">
+            </div>
+            <div class="mb-4">
+                <!--<p class="block text-gray-700 text-sm font-bold mb-2">Card amount</p>
+                <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">0</p>-->
+                <input type="hidden" id="id_deck" name="id_deck" value={{$id_deck}}>
             </div>
             <div class="flex items-center justify-between">
                 <button type="submit"
@@ -66,6 +71,13 @@
         const filterButtons = document.querySelectorAll('.filter-btn');
         const addButton = document.querySelectorAll('.add-btn');
         const deleteButton = document.querySelectorAll('.delete-btn');
+        // Obtener el path completo de la URL
+        const path = window.location.pathname;
+
+        // Asumiendo que la URL es algo como /update/123
+        // Dividir la URL por '/' y obtener el último segmento
+        const segments = path.split('/');
+        const id_deck = segments[segments.length - 1];
 
 
         filterButtons.forEach(btn => {
@@ -77,11 +89,12 @@
         });
 
         function filterCards(type) {
-            axios.get(`/create?data=${type}`)
+            axios.get(`/update/${id_deck}?data=${type}`)
                 .then(response => {
                     const cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = response.data;
                     setUpAddButtons();
+                    setUpDeleteButtons();
                 })
                 .catch(error => {
                     console.error('Error fetching cards:', error);
@@ -106,7 +119,7 @@
 
         function addCards(cardId) {
             console.log('Agregar carta con id:', cardId);
-            axios.get(`/create?currentCards=${cardId}`)
+            axios.get(`/update/${id_deck}?currentCards=${cardId}`)
                 .then(response => {
                     const deckList = document.getElementById('deck-list');
                     deckList.innerHTML = response.data;
@@ -137,7 +150,7 @@
 
         function deleteCards(cardId) {
             console.log('Borrar carta con id:', cardId);
-            axios.get(`/create?deleteCard=${cardId}`)
+            axios.get(`/update/${id_deck}?deleteCard=${cardId}`)
                 .then(response => {
                     const deckList = document.getElementById('deck-list');
                     deckList.innerHTML = response.data;

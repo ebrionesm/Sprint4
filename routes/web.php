@@ -13,6 +13,7 @@ route::post('/store', [DeckController::class, 'store'])->name('decks.store');
 route::get('/create', [DeckController::class, 'create'])->name('decks.create');
 route::get('/create/{card_type?}/{currentCards?}', [DeckController::class, 'create'])->name('decks.create');
 route::get('/update/{id_deck}', [DeckController::class, 'edit'])->name('decks.update');
-route::get('/update/{id_deck}/{card_type?}/{currentCards?}', [DeckController::class, 'edit'])->name('decks.update');
+route::get('/update/{card_type?}/{currentCards?}', [DeckController::class, 'edit'])->name('decks.update');
+route::post('/updateDeck', [DeckController::class, 'updateDeck'])->name('decks.updateDeck');
 Route::post('/decks/{deck}', [DeckController::class, 'delete'])->name('decks.delete');
 
