@@ -54,13 +54,16 @@ class DeckController extends Controller
                     $cardAddPosition = $request->input('currentCards');
                     $cardQuery = Card::find($cardAddPosition);
                     $cardsArray = $cardQuery->toArray();
-
-                    if (isset($this->currentDeckCards[$cardAddPosition])) 
+                    $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
+                    echo "Card position: " . $cardPosition;
+                    if(isset($this->currentDeckCards[$cardPosition]))
                     {
-                        $this->addExistingCardToList($cardAddPosition, $cardQuery, $cardsArray);
-                    } 
-                    else 
+                        echo "no sé";
+                        $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
+                    }
+                    else
                     {
+                        echo "sí sé";
                         $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
                     }
 
