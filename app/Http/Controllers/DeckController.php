@@ -235,7 +235,15 @@ class DeckController extends Controller
 
         // Crear una nueva instancia del modelo Deck y guardar los datos
         $deck = new Deck;
-        $deck->deck_name = $request->deck_name;
+        if($request->deck_name == "")
+        {
+            $deck->deck_name = "New deck";
+        }
+        else
+        {
+            $deck->deck_name = $request->deck_name;
+        }
+        
         $deck->deck_format = $request->deck_format;
         $cardQuantity = 0;
         foreach($this->currentDeckCards as $cardId => $cardData)

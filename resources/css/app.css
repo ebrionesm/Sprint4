@@ -1,0 +1,14 @@
+.menu-mobile {
+    display: none;
+}
+@media (max-width: 767px) {
+    .menu-mobile:checked ~ .menu-content {
+        display: block;
+    }
+}
+
+.bg-custom-image {
+    background-image: url('/img/pokemonBack.png');
+    background-size: cover;
+    background-position: center;
+}
