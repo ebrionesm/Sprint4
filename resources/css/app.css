@@ -9,6 +9,13 @@
 
 .bg-custom-image {
     background-image: url('/img/pokemonBack.png');
-    background-size: cover;
+    background-size: 105% 105%;
     background-position: center;
 }
+
+.bg-logo {
+    background-image: url('/img/logo.png');
+}
+
+.bg-sidebar { background: #3d68ff; }
+.nav-item:hover { background: #1947ee; }

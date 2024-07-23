@@ -25,3 +25,8 @@ route::get('/img/pokemonBack.png', function () {
     return response()->file(resource_path('img/pokemonBack.png'));
 });
 
+route::get('/img/logo.png', function () {
+    return response()->file(resource_path('img/LogoPoke.png'));
+});
+
+

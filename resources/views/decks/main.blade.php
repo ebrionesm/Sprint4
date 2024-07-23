@@ -1,22 +1,22 @@
 @extends('layout.index')
 @section('index')
 @include('decks.navbar')
-<div class="flex">
+<div class="w-full">
     
-    <div class="py-8">
-        <div class="px-4 py-4 bg-gray-900 shadow-lg rounded-lg mb-6">
-            <h1 class="text-xl font-bold text-white mb-2">
+    <div class="">
+        <div class="px-12 py-4 bg-yellow-400 shadow-lg mb-6">
+            <h1 class="text-xl text-white mb-2">
                 My Decks
             </h1>
         </div>
-            <div class="flex flex-wrap">
+            <div class="flex flex-wrap mx-8">
                 <!--<a href="/create" class="bg-blue-500 hover:bg-blue-700 max-w-xs rounded overflow-hidden shadow-lg text-white mb-4 p-4 h-64 w-48 relative">
                     +
                 </a>-->
                 <a href="/create" class="p-4 px-4 mb-4 ">
                     
-                    <div class=" bg-gray-200 max-w-xs rounded overflow-hidden shadow-lg text-gray-900 mb-1 p-4 h-64 w-48 relative flex items-center justify-center">
-                        <p class="font-bold p-4">+</p>
+                    <div class=" bg-gray-300 hover:bg-gray-500 max-w-xs rounded overflow-hidden shadow-lg text-gray-900 mb-1 p-4 h-64 w-48 relative flex items-center justify-center">
+                    <i class="fas fa-plus mr-3"></i>
                         
                     </div>
                 </a>
@@ -27,7 +27,7 @@
                         bg-custom-image max-w-xs rounded overflow-hidden shadow-lg text-white mb-1 p-4 h-64 w-48 relative">
                         
                     </div>
-                    <p class="text-gray">{{ $deck->deck_name}} {{ $deck->card_amount}}/60</p>
+                    <p class="font-bold text-gray">{{ $deck->deck_name}} {{ $deck->card_amount}}/60</p>
                     <form action="{{ route('decks.update', $deck->id_deck) }}" method="get" class="inline-block">
                         @csrf
                         <button type="submit" class="bg-green-700 hover:bg-green-900 text-white font-bold mb-4 py-2 px-2 rounded">
