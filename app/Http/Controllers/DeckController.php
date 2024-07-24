@@ -30,8 +30,7 @@ class DeckController extends Controller
         $decks = DB::table('deck')->get();
         session()->forget('currentDeckCards');
         $this->currentDeckCards = session('currentDeckCards', []);
-        //$deck = DB::table('card')->where('card_expansion', 'PAL')->first();
-        //$formato = $deck->card_name;
+
         return view('decks.main', ['decks' => $decks]);
     }
 
@@ -46,7 +45,6 @@ class DeckController extends Controller
 
         if($request->ajax())
         {
-            //echo "bbbb";
             if($request->input('currentCards'))
             {
                 if(!$this->checkDeckLimit())
@@ -55,15 +53,12 @@ class DeckController extends Controller
                     $cardQuery = Card::find($cardAddPosition);
                     $cardsArray = $cardQuery->toArray();
                     $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
-                    echo "Card position: " . $cardPosition;
                     if(isset($this->currentDeckCards[$cardPosition]))
                     {
-                        echo "no sé";
                         $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
                     }
                     else
                     {
-                        echo "sí sé";
                         $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
                     }
 
@@ -76,7 +71,11 @@ class DeckController extends Controller
             else if($request->input('deleteCard'))
             {
                 $cardRemovePosition = $request->input('deleteCard');
-                $this->removeCardFromList($cardRemovePosition);
+                $cardQuery = Card::find($cardRemovePosition);
+                $cardsArray = $cardQuery->toArray();
+                $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
+                if(isset($this->currentDeckCards[$cardPosition]))
+                    $this->removeCardFromList($cardPosition);
 
                 session(['currentDeckCards' => $this->currentDeckCards]);
 
@@ -101,12 +100,10 @@ class DeckController extends Controller
             $type = $request->input('data');
             $query = Card::query();
 
-            // Aplica el filtro por tipo de carta si se proporciona
             if ($type) {
                 $query->where('card_type', $type);
             }
-
-            // Ejecuta la consulta y obtén los resultados
+            
             $cards = $query->get();
         }
         else
@@ -131,26 +128,27 @@ class DeckController extends Controller
     {
         if ($cardQuery && $this->checkCardLimit($cardsArray)) 
         {
-            array_push($this->currentDeckCards, ['quantity' => 1,
-                'card' => $cardQuery]);
-            /*$this->currentDeckCards[$cardAddPosition] = [
+            array_push($this->currentDeckCards, 
+            [
                 'quantity' => 1,
-                'card' => $cardQuery,
-            ];*/
+                'card' => $cardQuery
+            ]);
         }
 
-        echo "Card position:" . $cardAddPosition;
     }
 
     public function removeCardFromList(int $cardRemovePosition)
     {
         if (isset($this->currentDeckCards[$cardRemovePosition])) 
         {
-            // Si la cantidad es mayor que 1, disminuir la cantidad
-            if ($this->currentDeckCards[$cardRemovePosition]['quantity'] > 1) {
+            
+            if ($this->currentDeckCards[$cardRemovePosition]['quantity'] > 1) 
+            {
                 $this->currentDeckCards[$cardRemovePosition]['quantity']--;
-            } else {
-                // Si la cantidad es 1, eliminar la carta del mazo
+            } 
+            else 
+            {
+                
                 unset($this->currentDeckCards[$cardRemovePosition]);
             }
         }
@@ -194,17 +192,13 @@ class DeckController extends Controller
 
     public function checkCardInList(int $cardAddPosition, array $cardsArray)
     {
-        echo "AAAAAAAA";
         foreach($this->currentDeckCards as $cardId => $cardData)
         {
             if($cardAddPosition == $cardData['card']->id_card)
             {
-                echo "carta encontrada" . $cardId;
                 return $cardId;
             }
         }
-
-        echo "OOOOOO";
 
         return NULL;
     }
@@ -288,17 +282,6 @@ class DeckController extends Controller
             'deck_format' => $request->deck_format,
             'card_amount' => $cardQuantity
         ]);
-        /*$cardsInList = [];
-        foreach($this->currentDeckCards as $cardId => $cardData)
-        {
-            array_push($cardsInList, $cardData['card']->id_card);
-        }
-
-        $cardsInDeck = DeckHasCard::where('id_deck', $request->id_deck)->pluck('id_card')->toArray();
-
-        $cardsDiff = array_diff($cardsInList, $cardsInDeck);
-
-        print_r($cardsDiff);*/
 
         DeckHasCard::where('id_deck', $request->id_deck)->delete();
         foreach($this->currentDeckCards as $cardId => $cardData)
@@ -309,27 +292,6 @@ class DeckController extends Controller
             $deckHasCard->card_quantity = $cardData['quantity'];
             $deckHasCard->save();
         }
-
-        /*foreach($cardsDiff as $card)
-        {
-
-        }*/
-
-        //echo Deck::find('deck_name')->where('id_deck', $request->deck_id);
-
-        /*if ($updated) {
-            return redirect()->back()->with('success', 'Deck actualizado correctamente.');
-        } else {
-            return redirect()->back()->with('error', 'Error al actualizar el deck. Verifique los datos ingresados.');
-        }*/
-        /*DB::table('deck_has_card')
-                    ->where('id_deck', $id_deck)
-                    ->where('id_card', $card['id_card'])
-                    ->update([
-                        'card_quantity' => $card['card_quantity'],
-                        'updated_at' => now(),
-                    ]);*/
-        //$decks = Deck::find($request->id_deck);
         $decks = DB::table('deck')->get();
         return redirect()->route('decks.main')->with('decks', $decks);
     }
@@ -378,7 +340,6 @@ class DeckController extends Controller
 
         if($request->ajax())
         {
-            //echo "bbbb";
             if($request->input('currentCards'))
             {
                 if(!$this->checkDeckLimit())
@@ -387,26 +348,14 @@ class DeckController extends Controller
                     $cardQuery = Card::find($cardAddPosition);
                     $cardsArray = $cardQuery->toArray();
                     $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
-                    echo "Card position: " . $cardPosition;
                     if(isset($this->currentDeckCards[$cardPosition]))
                     {
-                        echo "no sé";
                         $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
                     }
                     else
                     {
-                        echo "sí sé";
                         $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
                     }
-
-                    /*if (isset($this->currentDeckCards[$cardAddPosition])) 
-                    {
-                        
-                    } 
-                    else 
-                    {
-                        
-                    }*/
 
                     session(['currentDeckCards' => $this->currentDeckCards]);
                 }
@@ -420,7 +369,8 @@ class DeckController extends Controller
                 $cardQuery = Card::find($cardRemovePosition);
                 $cardsArray = $cardQuery->toArray();
                 $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
-                $this->removeCardFromList($cardPosition);
+                if(isset($this->currentDeckCards[$cardPosition]))
+                    $this->removeCardFromList($cardPosition);
 
                 session(['currentDeckCards' => $this->currentDeckCards]);
 
@@ -433,12 +383,7 @@ class DeckController extends Controller
             
         }
 
-        echo "hola";
         return view('decks.update', compact('cards','returnCards', 'currentDeckName', 'id_deck'));
-
-        //echo "Hola";
-        //return view('decks.update');
-        //return redirect()->route('decks.udpate')->with('decks', $deck);
     }
     
 
