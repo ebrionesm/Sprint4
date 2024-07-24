@@ -1,12 +1,5 @@
 <div id="deck-list">
     <h2 class="text-xl font-bold mb-4">Current Deck List</h2>
-    <table>
-        <thead></thead>
-        <tbody>
-            <th></th>
-        </tbody>
-    </table>
-    <ul>
     <table class="min-w-full bg-white">
         <thead class="bg-gray-700 text-white">
             <tr>
@@ -30,7 +23,7 @@
                 @endforeach
             @else
                 <tr>
-                    <td>The deck is empty.</td>
+                    <td class="py-3 px-4 text-center" colspan="3">The deck is empty.</td>
                 </tr>
             @endif
         </tbody>

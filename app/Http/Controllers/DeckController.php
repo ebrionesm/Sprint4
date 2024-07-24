@@ -71,7 +71,11 @@ class DeckController extends Controller
             else if($request->input('deleteCard'))
             {
                 $cardRemovePosition = $request->input('deleteCard');
-                $this->removeCardFromList($cardRemovePosition);
+                $cardQuery = Card::find($cardRemovePosition);
+                $cardsArray = $cardQuery->toArray();
+                $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
+                if(isset($this->currentDeckCards[$cardPosition]))
+                    $this->removeCardFromList($cardPosition);
 
                 session(['currentDeckCards' => $this->currentDeckCards]);
 
@@ -365,7 +369,8 @@ class DeckController extends Controller
                 $cardQuery = Card::find($cardRemovePosition);
                 $cardsArray = $cardQuery->toArray();
                 $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
-                $this->removeCardFromList($cardPosition);
+                if(isset($this->currentDeckCards[$cardPosition]))
+                    $this->removeCardFromList($cardPosition);
 
                 session(['currentDeckCards' => $this->currentDeckCards]);
 

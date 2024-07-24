@@ -2,66 +2,19 @@
 @extends('layout.index')
 @include('decks.navbar')
 <div class="fixed top-0 left-64 w-full px-12 py-4 bg-yellow-400 shadow-lg mb-6">
-        <h1 class="text-xl font-bold text-gray-900 mb-2">
-            Deck Builder
-        </h1>
-    </div>
+    <h1 class="text-xl font-bold text-gray-900 mb-2">
+        Deck Builder
+    </h1>
+</div>
 <div class="flex justify-center ml-64 mt-28 w-full">
-    
     <div class=" ml-12 w-1/4" id="formulario">
         <form action="{{route('decks.store')}}" method="POST" class="bg-white shadow-xl rounded px-8 pt-6 pb-11 mb-8">
-            @csrf
-            <div class="mb-4">
-                <label for="deck_name" class="block text-sm text-gray-600">Deck Name</label>
-                <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name" value="New Deck"
-                    class="w-full px-5 py-1 text-gray-700 bg-gray-200 rounded">
-            </div>
-            <div class="mb-6">
-                <label for="deck_format" class="block text-gray-700 text-sm font-bold mb-2">Deck Format</label>
-                <div class="relative">
-                    <select id="deck_format" name="deck_format"
-                            class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="standard">Standard</option>
-                        <option value="expanded">Expanded</option>
-                    </select>
-                    
-                </div>
-            </div>
-            <div class="mb-4">
-                <!--<p class="block text-gray-700 text-sm font-bold mb-2">Card amount</p>
-                <p class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">0</p>-->
-                <input type="hidden" id="card_amount" name="card_amount" value="0">
-            </div>
-            <div class="flex items-center justify-between">
-                <button type="submit"
-                        class="hover:bg-blue-800 px-4 py-1 text-white tracking-wider bg-blue-600 rounded">
-                    Create Deck
-                </button>
-                <a href="{{route('decks.main')}}" class="hover:bg-red-700 px-4 py-1 text-white tracking-wider bg-red-500 rounded">
-                    Cancel
-                </a>
-            </div>
-            <div class="flex items-center justify-between">
-                
-            </div>
+            @include('decks.deckForm')
         </form>
-        @include('decks.currentDeckList')
-        
+        @include('decks.currentDeckList')      
     </div>
         
-    <div class="flex flex-wrap w-3/4 overflow-y-auto">
-        <div class="flex-col px-4 " >
-            <div class="pb-2">
-                <button class="filter-btn bg-gray-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 ml-4" data-type="">All cards</button>
-                <button class="filter-btn bg-gray-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" data-type="pokemon">Pokemon</button>
-                <button class="filter-btn bg-gray-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" data-type="trainer">Trainer</button>
-                <button class="filter-btn bg-gray-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-type="energy">Energy</button>
-            </div>
-            
-            @include('decks.partial')
-        </div>
-         <!-- Incluye la vista parcial de cartas -->
-    </div>
+    @include('decks.filterCardButtons')
         
 </div>
     
@@ -88,6 +41,7 @@
                     const cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = response.data;
                     setUpAddButtons();
+                    setUpDeleteButtons();
                 })
                 .catch(error => {
                     console.error('Error cargando carta:', error);
