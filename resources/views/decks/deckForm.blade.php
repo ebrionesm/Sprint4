@@ -1,8 +1,8 @@
 @csrf
 <div class="mb-4">
-    <label for="deck_name" class="block text-sm text-gray-600">Deck Name</label>
+    <label for="deck_name" class="block text-sm font-bold text-gray-600">Deck Name</label>
     <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name" value="{{ isset($currentDeckName) ? $currentDeckName : 'New Deck' }}"
-        class="w-full px-5 py-1 text-gray-700 bg-gray-200 rounded">
+        class="w-full px-4 py-1 text-gray-700 bg-gray-200 rounded">
 </div>
 <div class="mb-6">
     <label for="deck_format" class="block text-gray-700 text-sm font-bold mb-2">Deck Format</label>
