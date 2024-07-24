@@ -14,8 +14,8 @@ route::get('/create', [DeckController::class, 'create'])->name('decks.create');
 route::get('/create/{card_type?}/{currentCards?}', [DeckController::class, 'create'])->name('decks.create');
 route::get('/update/{id_deck}', [DeckController::class, 'edit'])->name('decks.update');
 route::get('/update/{card_type?}/{currentCards?}', [DeckController::class, 'edit'])->name('decks.update');
-route::post('/updateDeck', [DeckController::class, 'updateDeck'])->name('decks.updateDeck');
-Route::post('/decks/{deck}', [DeckController::class, 'delete'])->name('decks.delete');
+route::patch('/updateDeck', [DeckController::class, 'updateDeck'])->name('decks.updateDeck');
+Route::delete('/decks/{deck}', [DeckController::class, 'delete'])->name('decks.delete');
 
 route::get('/css/app.css', function () {
     return response()->file(resource_path('css/app.css'));

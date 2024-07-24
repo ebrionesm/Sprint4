@@ -40,6 +40,7 @@
                 <!--<a class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="{{$deck->id_deck}}">Update</a>-->
                 <form action="{{ route('decks.delete', $deck->id_deck) }}" method="POST" class="inline-block">
                     @csrf
+                    @method('DELETE')
                     <button type="submit" class="bg-red-700 hover:bg-red-900 text-white font-bold mb-4 py-2 px-2 rounded">
                         <i class="fas fa-trash text-xl"></i>
                     </button>

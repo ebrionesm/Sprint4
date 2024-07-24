@@ -9,6 +9,7 @@
 <div class="flex justify-center ml-64 mt-28 w-full">
     <div class=" ml-12 w-1/4" id="formulario">
         <form action="{{route('decks.updateDeck')}}" method="POST" class="bg-white shadow-xl rounded px-8 pt-6 pb-11 mb-8">
+            @method('PATCH')
             @include('decks.deckForm')
         </form>
         @include('decks.currentDeckList')
