@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Deck extends Model
+class Card extends Model
 {
     use HasFactory;
     /**
@@ -13,17 +13,11 @@ class Deck extends Model
      *
      * @var string
      */
-    protected $table = 'deck';
+    protected $table = 'card';
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'id_deck';
-
-    public function deck()
-    {
-        //$deck = Deck::find($this->id_deck);
-        return $this->belongsTo('\App\Models\Deck');
-    }
+    protected $primaryKey = 'id_card';
 }
