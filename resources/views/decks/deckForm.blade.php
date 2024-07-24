@@ -12,7 +12,6 @@
             <option value="standard" class="bg-blue-500">Standard</option>
             <option value="expanded" class="bg-red-500">Expanded</option>
         </select>
-        
     </div>
 </div>
 <div class="mb-4">
