@@ -17,5 +17,5 @@
     background-image: url('/img/logo.png');
 }
 
-.bg-sidebar { background: #3d68ff; }
+.bg-sidebar { background: rgb(51, 51, 51); }
 .nav-item:hover { background: #1947ee; }
