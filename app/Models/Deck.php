@@ -21,6 +21,12 @@ class Deck extends Model
      */
     protected $primaryKey = 'id_deck';
 
+    protected $fillable = [
+        'deck_name',
+        'deck_format',
+        'card_amount'
+    ];
+
     public function deck()
     {
         //$deck = Deck::find($this->id_deck);
