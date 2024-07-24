@@ -50,34 +50,14 @@ class DeckController extends Controller
                 if(!$this->checkDeckLimit())
                 {
                     $cardAddPosition = $request->input('currentCards');
-                    $cardQuery = Card::find($cardAddPosition);
-                    $cardsArray = $cardQuery->toArray();
-                    $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
-                    if(isset($this->currentDeckCards[$cardPosition]))
-                    {
-                        $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
-                    }
-                    else
-                    {
-                        $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
-                    }
-
-                    session(['currentDeckCards' => $this->currentDeckCards]);
-                }
-                
+                    $this->addCardToCurrentList($cardAddPosition);
+                } 
                 return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
-                
             }
             else if($request->input('deleteCard'))
             {
                 $cardRemovePosition = $request->input('deleteCard');
-                $cardQuery = Card::find($cardRemovePosition);
-                $cardsArray = $cardQuery->toArray();
-                $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
-                if(isset($this->currentDeckCards[$cardPosition]))
-                    $this->removeCardFromList($cardPosition);
-
-                session(['currentDeckCards' => $this->currentDeckCards]);
+                $this->deleteCardFromCurrentList( $cardRemovePosition );
 
                 return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
             }
@@ -91,6 +71,37 @@ class DeckController extends Controller
         {
             return view('decks.create', compact('cards','returnCards'));
         }
+    }
+
+    public function addCardToCurrentList(string $cardAddPosition)
+    {
+        $cardQuery = Card::find($cardAddPosition);
+        $cardsArray = $cardQuery->toArray();
+        $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
+        if(isset($this->currentDeckCards[$cardPosition]))
+        {
+            $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
+        }
+        else
+        {
+            $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
+        }
+
+        session(['currentDeckCards' => $this->currentDeckCards]);
+    }
+
+    public function deleteCardFromCurrentList(string $cardRemovePosition)
+    {
+        $cardQuery = Card::find($cardRemovePosition);
+        $cardsArray = $cardQuery->toArray();
+        $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
+        if(isset($this->currentDeckCards[$cardPosition]))
+        {
+            $this->removeCardFromList($cardPosition);
+        }
+            
+
+        session(['currentDeckCards' => $this->currentDeckCards]);
     }
 
     public function showCardFilter(Request $request)
@@ -216,6 +227,17 @@ class DeckController extends Controller
         return $totalCards >= 60;
     }
 
+    public function getCardListTotalQuantity()
+    {
+        $cardQuantity = 0;
+        foreach($this->currentDeckCards as $cardId => $cardData)
+        {
+            $cardQuantity += $cardData['quantity'];
+        }
+
+        return $cardQuantity;
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -227,7 +249,6 @@ class DeckController extends Controller
             'card_amount' => 'nullable|int'
         ]);
 
-        // Crear una nueva instancia del modelo Deck y guardar los datos
         $deck = new Deck;
         if($request->deck_name == "")
         {
@@ -239,12 +260,8 @@ class DeckController extends Controller
         }
         
         $deck->deck_format = $request->deck_format;
-        $cardQuantity = 0;
-        foreach($this->currentDeckCards as $cardId => $cardData)
-        {
-            $cardQuantity += $cardData['quantity'];
-        }
-        $deck->card_amount = $cardQuantity;
+        
+        $deck->card_amount = $this->getCardListTotalQuantity();
         $deck->save();
 
         
@@ -271,16 +288,10 @@ class DeckController extends Controller
             'card_amount' => 'nullable|int'
         ]);
 
-        $cardQuantity = 0;
-        foreach($this->currentDeckCards as $cardId => $cardData)
-        {
-            $cardQuantity += $cardData['quantity'];
-        }
-
         Deck::where('id_deck', $request->id_deck)->update([
             'deck_name' => $request->deck_name,
             'deck_format' => $request->deck_format,
-            'card_amount' => $cardQuantity
+            'card_amount' => $this->getCardListTotalQuantity()
         ]);
 
         DeckHasCard::where('id_deck', $request->id_deck)->delete();
@@ -345,19 +356,7 @@ class DeckController extends Controller
                 if(!$this->checkDeckLimit())
                 {
                     $cardAddPosition = $request->input('currentCards');
-                    $cardQuery = Card::find($cardAddPosition);
-                    $cardsArray = $cardQuery->toArray();
-                    $cardPosition = $this->checkCardInList($cardAddPosition, $cardsArray);
-                    if(isset($this->currentDeckCards[$cardPosition]))
-                    {
-                        $this->addExistingCardToList($cardPosition, $cardQuery, $cardsArray);
-                    }
-                    else
-                    {
-                        $this->addNewCardToList($cardAddPosition, $cardQuery, $cardsArray);
-                    }
-
-                    session(['currentDeckCards' => $this->currentDeckCards]);
+                    $this->addCardToCurrentList($cardAddPosition);
                 }
                 
                 return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
@@ -366,13 +365,7 @@ class DeckController extends Controller
             else if($request->input('deleteCard'))
             {
                 $cardRemovePosition = $request->input('deleteCard');
-                $cardQuery = Card::find($cardRemovePosition);
-                $cardsArray = $cardQuery->toArray();
-                $cardPosition = $this->checkCardInList($cardRemovePosition, $cardsArray);
-                if(isset($this->currentDeckCards[$cardPosition]))
-                    $this->removeCardFromList($cardPosition);
-
-                session(['currentDeckCards' => $this->currentDeckCards]);
+                $this->deleteCardFromCurrentList( $cardRemovePosition );
 
                 return view('decks.currentDeckList', ['returnCards' => $this->currentDeckCards]);
             }
