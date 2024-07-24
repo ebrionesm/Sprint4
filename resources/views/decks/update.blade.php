@@ -1,5 +1,6 @@
 
 @extends('layout.index')
+@include('decks.navbar')
 <div class="flex justify-center">
     <div class="w-2/5 max-w-md mx-auto mt-4" id="formulario">
         <form action="{{route('decks.updateDeck')}}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
