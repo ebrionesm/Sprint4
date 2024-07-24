@@ -2,14 +2,14 @@
 <div class="mb-4">
     <label for="deck_name" class="block text-sm font-bold text-gray-600">Deck Name</label>
     <input type="text" id="deck_name" name="deck_name" placeholder="Enter deck name" value="{{ isset($currentDeckName) ? $currentDeckName : 'New Deck' }}"
-        class="w-full px-4 py-1 text-gray-700 bg-gray-200 rounded">
+        class="w-full px-4 py-1 text-gray-700 bg-gray-200 rounded" required>
 </div>
 <div class="mb-6">
     <label for="deck_format" class="block text-gray-700 text-sm font-bold mb-2">Deck Format</label>
     <div class="relative">
         <select id="deck_format" name="deck_format"
                 class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
-            <option value="standard" class="bg-blue-500">Standard</option>
+            <option value="standard" class="bg-blue-500" selected>Standard</option>
             <option value="expanded" class="bg-red-500">Expanded</option>
         </select>
     </div>
