@@ -28,6 +28,7 @@ class DeckController extends Controller
     public function index() : View
     {
         $decks = DB::table('deck')->get();
+        
         session()->forget('currentDeckCards');
         $this->currentDeckCards = session('currentDeckCards', []);
 
